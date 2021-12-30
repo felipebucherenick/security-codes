@@ -1,0 +1,10 @@
+$base-color: purple;
+$background-color: green;
+
+body {
+  background-color: $background-color;
+}
+
+h1 {
+  color: $base-color;
+}
