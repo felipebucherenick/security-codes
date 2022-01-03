@@ -1,9 +1,17 @@
 import React from 'react';
 
+import { UseState } from './UseState';
+import { ClassState } from './ClassState';
+
 import '../styles/Global.scss';
 
 const App = () => {
-  return <h1>Hello World</h1>;
+  return (
+    <div className="App">
+      <UseState name="UseState" />
+      <ClassState name="ClassState" />
+    </div>
+  );
 };
 
 export { App };
