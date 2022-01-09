@@ -7,64 +7,135 @@ const UseState = ({ name }) => {
     value: '',
     loading: false,
     error: false,
+    confirmed: false,
+    deleted: false,
   });
 
-  console.log(state.value);
+  const { value, loading, error, confirmed, deleted } = state;
+
+  const onConfirm = () => {
+    setState({
+      ...state,
+      loading: false,
+      error: false,
+      confirmed: true,
+      value: '',
+    });
+  };
+
+  const onError = () => {
+    setState({
+      ...state,
+      loading: false,
+      error: true,
+    });
+  };
+
+  const onWrite = (newValue) => {
+    setState({
+      ...state,
+      value: newValue,
+    });
+  };
+
+  const onCheck = () => {
+    setState({
+      ...state,
+      loading: true,
+    });
+  };
+
+  const onDelete = () => {
+    setState({
+      ...state,
+      deleted: true,
+    });
+  };
+
+  const onReset = () => {
+    setState({
+      ...state,
+      confirmed: false,
+      deleted: false,
+    });
+  };
 
   React.useEffect(() => {
     console.log('Empezando el efecto');
 
-    if (state.loading) {
+    if (loading) {
       setTimeout(() => {
         console.log('Empezando la peticion');
-        if (state.value === SECURITY_CODE) {
-          setState({
-            ...state,
-            loading: false,
-            error: false,
-          });
+        if (value === SECURITY_CODE) {
+          onConfirm();
         } else {
-          setState({
-            ...state,
-            loading: false,
-            error: true,
-          });
+          onError();
         }
         console.log('Terminando la peticion');
       }, 3000);
     }
 
     console.log('Terminando el efecto');
-  }, [state.loading]);
+  }, [loading]);
 
-  return (
-    <div className="UseState">
-      <h1>Eliminar {name}</h1>
-      <p>Por favor escribe el codigo de seguridad.</p>
-      {state.error && !state.loading && <p>Error: El código es incorrecto</p>}
-      {state.loading && <p>Loading......</p>}
-      <input
-        placeholder="Código de seguridad"
-        value={state.value}
-        onChange={(event) => {
-          setState({
-            ...state,
-            value: event.target.value,
-          });
-        }}
-      />
-      <button
-        onClick={() => {
-          setState({
-            ...state,
-            loading: !state.loading,
-          });
-        }}
-      >
-        Comprobar
-      </button>
-    </div>
-  );
+  if (!confirmed && !deleted) {
+    return (
+      <div className="UseState">
+        <h1>Eliminar {name}</h1>
+        <p>Por favor escribe el codigo de seguridad.</p>
+        {error && !loading && <p>Error: El código es incorrecto</p>}
+        {loading && <p>Loading......</p>}
+        <input
+          placeholder="Código de seguridad"
+          value={value}
+          onChange={(event) => {
+            onWrite(event.target.value);
+          }}
+        />
+        <button
+          onClick={() => {
+            onCheck();
+          }}
+        >
+          Comprobar
+        </button>
+      </div>
+    );
+  } else if (confirmed && !deleted) {
+    return (
+      <div>
+        <h1>Eliminar {name}</h1>
+        <p>¿Seguro que quieres eliminar {name} ?</p>
+        <button
+          onClick={() => {
+            onDelete();
+          }}
+        >
+          Si, Eliminar
+        </button>
+        <button
+          onClick={() => {
+            onReset();
+          }}
+        >
+          No, Volver
+        </button>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>{name} fue eliminado</h1>
+        <button
+          onClick={() => {
+            onReset();
+          }}
+        >
+          Recuperar {name}
+        </button>
+      </div>
+    );
+  }
 };
 
 export { UseState };
